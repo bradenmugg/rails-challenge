@@ -3,16 +3,14 @@
 class OrdersController < ApplicationController
   def create
     @order = Order.new(order_params)
-    @order.save
+    unless @order.save
+      render json: { message: @order.errors.messages }, status: :not_found
+    end
   end
 
   private
 
   def order_params
-    params.require([:customer_id, order_variants_attributes: %i[id quantity]])
-  end
-
-  def required_params
-    %i[customer_id order_variants_attributes]
+    params.require(:order).permit(:customer_id, order_variants_attributes: %i[variant_id quantity])
   end
 end
