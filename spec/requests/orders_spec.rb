@@ -43,5 +43,25 @@ RSpec.describe 'Orders endpoint', type: :request do
         expect(response).to have_http_status(422)
       end
     end
+
+    context 'when there is enough stock for all of the variants' do
+      let(:customer) { create :customer }
+      let(:variant) { create :variant, stock_amount: 3 }
+      let(:variant_two) { create :variant, stock_amount: 3 }
+
+      it 'returns status code 422' do
+        post '/orders',
+             params: {
+               order: {
+                 customer_id: customer.id,
+                 order_variants_attributes:
+                   [{ variant_id: variant.id, quantity: 3 },
+                    { variant_id: variant_two.id, quantity: 3 }]
+               }
+             }
+
+        expect(response).to have_http_status(200)
+      end
+    end
   end
 end
