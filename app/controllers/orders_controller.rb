@@ -10,6 +10,11 @@ class OrdersController < ApplicationController
     end
   end
 
+  def show
+    @order = Order.find(params[:id])
+    render json: { message: @order.as_json }, status: :ok
+  end
+
   private
 
   def order_params
@@ -21,14 +26,16 @@ class OrdersController < ApplicationController
   def process_order
     @order.transaction do
       @order.order_variants.each do |order_variant|
-        v = order_variant.variant
-        v.update_attributes!(
-          stock_amount: v.stock_amount - order_variant.quantity
+        variant = order_variant.variant
+        variant.update_attributes!(
+          stock_amount: variant.stock_amount - order_variant.quantity
         )
+        @order.total_cost += variant.cost * order_variant.quantity
       end
       @order.save!
     end
   rescue ActiveRecord::RecordInvalid
+    @order.errors.add(:Quantity, message: 'exceeds available stock')
     false
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_21_132015) do
+ActiveRecord::Schema.define(version: 2019_05_23_201127) do
 
   create_table "collections", force: :cascade do |t|
     t.string "name"
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 2019_05_21_132015) do
   create_table "orders", force: :cascade do |t|
     t.integer "customer_id"
     t.string "status", default: "pending"
-    t.integer "total_cost"
+    t.integer "total_cost", default: 0
     t.datetime "created_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
   end
